@@ -16,6 +16,7 @@ import Spinner from "./Spinner";
 import { useCities } from "../contexts/CitiesContext";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Loader from "./Loader";
 
 export function convertToEmoji(countryCode) {
   const codePoints = countryCode
@@ -34,6 +35,7 @@ function Form() {
   const [lat, lng] = useUrlPosition();
   const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
   const [geocodingError, setGeocodingError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [emoji, setEmoji] = useState("");
   const { createCity, isLoading } = useCities();
 
@@ -64,6 +66,7 @@ function Form() {
   }, [lat, lng]);
 
   async function handleSubmitForm(e) {
+    setLoading(true);
     e.preventDefault();
     if (!cityName || !date) return;
 
@@ -88,6 +91,7 @@ function Form() {
       }
     );
     if (data.error) return toast.error(data.error);
+    setLoading(false);
     toast.success(data.message);
     navigate("/app");
   }
@@ -133,7 +137,9 @@ function Form() {
       </div>
 
       <div className={styles.buttons}>
-        <Button type="primary">Add</Button>
+        <Button disabled={loading} type="primary">
+          {loading ? <Loader /> : "Add"}
+        </Button>
         <BackButton />
       </div>
     </form>

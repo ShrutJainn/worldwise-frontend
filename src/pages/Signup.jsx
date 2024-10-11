@@ -7,10 +7,13 @@ import toast from "react-hot-toast";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import Loader from "../components/Loader";
 
 export default function Signup() {
   // PRE-FILL FOR DEV PURPOSES
   const setUser = useSetRecoilState(userAtom);
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm();
 
   const url = import.meta.env.VITE_APP_URL;
@@ -18,6 +21,7 @@ export default function Signup() {
 
   async function onSubmit(inputData) {
     try {
+      setLoading(true);
       const { data } = await axios.post(url + "/users/signup", inputData);
       localStorage.setItem("worldwise-user", JSON.stringify(data.user));
       setUser(data.user);
@@ -27,6 +31,8 @@ export default function Signup() {
       if (error.response.data.error) {
         toast.error(error.response.data.error);
       }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -36,24 +42,46 @@ export default function Signup() {
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.row}>
           <label htmlFor="email">Full Name</label>
-          <input type="username" id="username" {...register("name")} />
+          <input
+            disabled={loading}
+            type="username"
+            id="username"
+            {...register("name")}
+          />
         </div>
         <div className={styles.row}>
           <label htmlFor="email">Email</label>
-          <input type="username" id="username" {...register("email")} />
+          <input
+            disabled={loading}
+            type="username"
+            id="username"
+            {...register("email")}
+          />
         </div>
         <div className={styles.row}>
           <label htmlFor="email">Username</label>
-          <input type="username" id="username" {...register("username")} />
+          <input
+            disabled={loading}
+            type="username"
+            id="username"
+            {...register("username")}
+          />
         </div>
 
         <div className={styles.row}>
           <label htmlFor="password">Password</label>
-          <input type="password" id="password" {...register("password")} />
+          <input
+            disabled={loading}
+            type="password"
+            id="password"
+            {...register("password")}
+          />
         </div>
 
         <div>
-          <Button type="primary">Signup</Button>
+          <Button disabled={loading} type="primary">
+            {loading ? <Loader /> : "Signup"}
+          </Button>
         </div>
         <div>
           <p style={{ fontSize: "medium" }}>

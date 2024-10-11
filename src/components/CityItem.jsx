@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import cityAtom from "../atoms/cityAtom";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import Loader from "./Loader";
 
 const formatDate = (date) =>
   new Intl.DateTimeFormat("en", {
@@ -15,12 +17,14 @@ const formatDate = (date) =>
   }).format(new Date(date));
 
 function CityItem({ city }) {
-  const { currentCity, deleteCity } = useCities();
+  const { currentCity } = useCities();
   const [cities, setCities] = useRecoilState(cityAtom);
+  const [loading, setLoading] = useState(false);
   const { cityName, emoji, createdAt: date, _id: id, position } = city;
   const token = JSON.parse(localStorage.getItem("worldwise-user")).token;
   async function handleDeleteCity(e) {
     e.preventDefault();
+    setLoading(true);
     try {
       const { data } = await axios.delete(
         `${import.meta.env.VITE_APP_URL}/places/delete/${id}`,
@@ -34,6 +38,8 @@ function CityItem({ city }) {
       toast.success(data.message);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -47,7 +53,11 @@ function CityItem({ city }) {
         <span className={styles.emoji}>{emoji}</span>
         <h3 className={styles.name}>{cityName}</h3>
         <time className={styles.date}>{formatDate(date)}</time>
-        <button className={styles.deleteBtn} onClick={handleDeleteCity}>
+        <button
+          disabled={loading}
+          className={styles.deleteBtn}
+          onClick={handleDeleteCity}
+        >
           &times;
         </button>
       </Link>

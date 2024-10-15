@@ -7,7 +7,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
-import Spinner from "../components/Spinner";
 import Loader from "../components/Loader";
 
 export default function Login() {

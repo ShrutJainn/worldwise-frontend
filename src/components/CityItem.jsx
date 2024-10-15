@@ -6,7 +6,6 @@ import { useRecoilState } from "recoil";
 import cityAtom from "../atoms/cityAtom";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import Loader from "./Loader";
 
 const formatDate = (date) =>
   new Intl.DateTimeFormat("en", {

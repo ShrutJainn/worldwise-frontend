@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { CitiesProvider } from "./contexts/CitiesContext";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./pages/ProtectedRoute";
 
@@ -12,13 +12,7 @@ import SpinnerFullPage from "./components/SpinnerFullPage";
 import { useRecoilValue } from "recoil";
 import userAtom from "./atoms/userAtom";
 import Signup from "./pages/Signup";
-
-// import Product from "./pages/Product";
-// import Pricing from "./pages/Pricing";
-// import Homepage from "./pages/Homepage";
-// import PageNotFound from "./pages/PageNotFound";
-// import AppLayout from "./pages/AppLayout";
-// import Login from "./pages/Login";
+import SmallScreenMessage from "./components/SmallScreenMessage";
 
 const Homepage = lazy(() => import("./pages/Homepage"));
 const Product = lazy(() => import("./pages/Product"));
@@ -28,6 +22,24 @@ const AppLayout = lazy(() => import("./pages/AppLayout"));
 const Login = lazy(() => import("./pages/Login"));
 function App() {
   const user = useRecoilValue(userAtom);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1024); // Set your breakpoint, here 1024px
+    };
+
+    handleResize(); // Check on initial load
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  if (isSmallScreen) {
+    return <SmallScreenMessage />;
+  }
   return (
     <CitiesProvider>
       <Suspense fallback={SpinnerFullPage}>
